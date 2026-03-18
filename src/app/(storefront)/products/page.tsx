@@ -20,7 +20,6 @@ interface ProductsPageProps {
     minPrice?: string;
     maxPrice?: string;
     material?: string;
-    inStock?: string;
     sort?: string;
     search?: string;
     page?: string;
@@ -62,11 +61,6 @@ export default async function ProductsPage(props: ProductsPageProps) {
     where.material = { in: materials };
   }
 
-  // In-stock filter
-  if (searchParams.inStock === "true") {
-    where.stock = { gt: 0 };
-  }
-
   // Search text
   if (searchParams.search) {
     where.OR = [
@@ -83,10 +77,6 @@ export default async function ProductsPage(props: ProductsPageProps) {
       break;
     case "price-desc":
       orderBy = { price: "desc" };
-      break;
-    case "top-rated":
-      // Sort by newest as fallback; we'll re-sort after fetching reviews
-      orderBy = { createdAt: "desc" };
       break;
     case "newest":
     default:
@@ -116,10 +106,6 @@ export default async function ProductsPage(props: ProductsPageProps) {
         category: {
           select: { name: true },
         },
-        reviews: {
-          where: { status: "APPROVED" },
-          select: { rating: true },
-        },
       },
     }),
     db.product.count({ where }),
@@ -130,35 +116,19 @@ export default async function ProductsPage(props: ProductsPageProps) {
   ]);
 
   // Transform products to the shape ProductCard expects
-  const products = rawProducts.map((p) => {
-    const ratings = p.reviews.map((r) => r.rating);
-    const averageRating =
-      ratings.length > 0
-        ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length
-        : 0;
-    return {
-      id: p.id,
-      name: p.name,
-      slug: p.slug,
-      price: Number(p.price),
-      compareAtPrice: p.compareAtPrice ? Number(p.compareAtPrice) : null,
-      images: p.images.map((img) => ({
-        url: img.url,
-        alt: img.alt ?? p.name,
-      })),
-      category: p.category,
-      material: p.material,
-      averageRating,
-      reviewCount: ratings.length,
-    };
-  });
-
-  // If sorting by top-rated, sort client-side after computing averages
-  if (searchParams.sort === "top-rated") {
-    products.sort(
-      (a, b) => (b.averageRating ?? 0) - (a.averageRating ?? 0)
-    );
-  }
+  const products = rawProducts.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    price: Number(p.price),
+    compareAtPrice: p.compareAtPrice ? Number(p.compareAtPrice) : null,
+    images: p.images.map((img) => ({
+      url: img.url,
+      alt: img.alt ?? p.name,
+    })),
+    category: p.category,
+    material: p.material,
+  }));
 
   const totalPages = Math.ceil(totalCount / PRODUCTS_PER_PAGE);
 
@@ -169,7 +139,6 @@ export default async function ProductsPage(props: ProductsPageProps) {
     if (searchParams.minPrice) params.set("minPrice", searchParams.minPrice);
     if (searchParams.maxPrice) params.set("maxPrice", searchParams.maxPrice);
     if (searchParams.material) params.set("material", searchParams.material);
-    if (searchParams.inStock) params.set("inStock", searchParams.inStock);
     if (searchParams.sort) params.set("sort", searchParams.sort);
     if (searchParams.search) params.set("search", searchParams.search);
     if (pageNum > 1) params.set("page", pageNum.toString());

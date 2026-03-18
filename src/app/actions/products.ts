@@ -15,7 +15,6 @@ interface VariantInput {
   value: string;
   sku: string;
   price?: number;
-  stock: number;
 }
 
 interface ProductPayload {
@@ -25,7 +24,6 @@ interface ProductPayload {
   price: number;
   compareAtPrice: number | null;
   sku: string;
-  stock: number;
   isActive: boolean;
   isFeatured: boolean;
   material: string | null;
@@ -63,7 +61,6 @@ export async function createProduct(data: ProductPayload) {
         price: data.price,
         compareAtPrice: data.compareAtPrice,
         sku: data.sku,
-        stock: data.stock,
         isActive: data.isActive,
         isFeatured: data.isFeatured,
         material: data.material,
@@ -85,7 +82,6 @@ export async function createProduct(data: ProductPayload) {
             value: v.value,
             sku: v.sku,
             price: v.price ?? null,
-            stock: v.stock,
             sortOrder: i,
           })),
         },
@@ -124,7 +120,6 @@ export async function updateProduct(id: string, data: ProductPayload) {
           price: data.price,
           compareAtPrice: data.compareAtPrice,
           sku: data.sku,
-          stock: data.stock,
           isActive: data.isActive,
           isFeatured: data.isFeatured,
           material: data.material,
@@ -146,7 +141,6 @@ export async function updateProduct(id: string, data: ProductPayload) {
               value: v.value,
               sku: v.sku,
               price: v.price ?? null,
-              stock: v.stock,
               sortOrder: i,
             })),
           },

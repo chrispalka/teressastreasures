@@ -31,7 +31,6 @@ interface VariantInput {
   value: string;
   sku: string;
   price?: number;
-  stock: number;
 }
 
 interface ProductData {
@@ -42,7 +41,6 @@ interface ProductData {
   price: number;
   compareAtPrice: number | null;
   sku: string;
-  stock: number;
   isActive: boolean;
   isFeatured: boolean;
   material: string | null;
@@ -73,7 +71,6 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
     initialData?.compareAtPrice?.toString() ?? ""
   );
   const [sku, setSku] = useState(initialData?.sku ?? "");
-  const [stock, setStock] = useState(initialData?.stock?.toString() ?? "0");
   const [material, setMaterial] = useState(initialData?.material ?? "");
   const [weight, setWeight] = useState(initialData?.weight?.toString() ?? "");
   const [categoryId, setCategoryId] = useState(initialData?.categoryId ?? "");
@@ -116,7 +113,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
   function addVariant() {
     setVariants([
       ...variants,
-      { name: "", value: "", sku: "", price: undefined, stock: 0 },
+      { name: "", value: "", sku: "", price: undefined },
     ]);
   }
 
@@ -150,7 +147,6 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
       price: parseFloat(price),
       compareAtPrice: compareAtPrice ? parseFloat(compareAtPrice) : null,
       sku,
-      stock: parseInt(stock, 10),
       isActive,
       isFeatured,
       material: material || null,
@@ -283,14 +279,14 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
         </CardContent>
       </Card>
 
-      {/* Pricing & Inventory */}
+      {/* Pricing */}
       <Card className="border-blush/50">
         <CardHeader>
           <CardTitle className="font-serif text-lg text-espresso">
-            Pricing &amp; Inventory
+            Pricing
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div className="space-y-2">
             <Label htmlFor="price">Price ($)</Label>
             <Input
@@ -328,16 +324,6 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
             {errors.sku && (
               <p className="text-xs text-error">{errors.sku}</p>
             )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="stock">Stock</Label>
-            <Input
-              id="stock"
-              type="number"
-              min="0"
-              value={stock}
-              onChange={(e) => setStock(e.target.value)}
-            />
           </div>
         </CardContent>
       </Card>
@@ -565,17 +551,6 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                     )
                   }
                   placeholder="Optional"
-                />
-              </div>
-              <div className="w-20 space-y-1">
-                <Label>Stock</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={variant.stock}
-                  onChange={(e) =>
-                    updateVariant(index, "stock", parseInt(e.target.value, 10) || 0)
-                  }
                 />
               </div>
               <button

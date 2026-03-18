@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, ShoppingBag, User, Menu, Heart } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,14 +12,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useCartStore } from "@/stores/cart-store";
 
 const navLinks = [
   { label: "Shop", href: "/products" },
@@ -69,31 +61,6 @@ function NavLink({
   );
 }
 
-function CartBadge() {
-  const itemCount = useCartStore((s) => s.itemCount());
-
-  return (
-    <Link href="/cart" className="relative">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="text-espresso hover:text-champagne-gold"
-        asChild
-      >
-        <span>
-          <ShoppingBag className="h-5 w-5" />
-          <span className="sr-only">Cart</span>
-        </span>
-      </Button>
-      {itemCount > 0 && (
-        <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-champagne-gold text-[10px] font-semibold text-espresso">
-          {itemCount > 99 ? "99+" : itemCount}
-        </span>
-      )}
-    </Link>
-  );
-}
-
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -131,24 +98,6 @@ export function Header() {
                   </Link>
                 ))}
               </nav>
-              <div className="border-t border-blush px-4 py-4">
-                <Link
-                  href="/account/wishlist"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 rounded-md px-3 py-2.5 font-sans text-sm text-espresso transition-colors hover:bg-warm-sand"
-                >
-                  <Heart className="h-4 w-4" />
-                  Wishlist
-                </Link>
-                <Link
-                  href="/account"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 rounded-md px-3 py-2.5 font-sans text-sm text-espresso transition-colors hover:bg-warm-sand"
-                >
-                  <User className="h-4 w-4" />
-                  Account
-                </Link>
-              </div>
             </SheetContent>
           </Sheet>
         </div>
@@ -185,47 +134,6 @@ export function Header() {
             <Search className="h-5 w-5" />
             <span className="sr-only">Search (Cmd+K)</span>
           </Button>
-
-          {/* User account dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hidden text-espresso hover:text-champagne-gold sm:inline-flex"
-              >
-                <User className="h-5 w-5" />
-                <span className="sr-only">Account</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-ivory">
-              <DropdownMenuItem asChild>
-                <Link href="/account" className="cursor-pointer">
-                  My Account
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/account/orders" className="cursor-pointer">
-                  Orders
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/account/wishlist" className="cursor-pointer">
-                  <Heart className="mr-2 h-4 w-4" />
-                  Wishlist
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/auth/login" className="cursor-pointer">
-                  Sign In
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Cart */}
-          <CartBadge />
         </div>
       </div>
     </header>

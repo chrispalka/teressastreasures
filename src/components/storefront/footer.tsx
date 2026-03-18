@@ -13,8 +13,6 @@ const shopLinks = [
 
 const helpLinks = [
   { label: "Contact Us", href: "/contact" },
-  { label: "Shipping Info", href: "/shipping" },
-  { label: "Returns & Exchanges", href: "/returns" },
   { label: "FAQ", href: "/faq" },
 ];
 
@@ -77,8 +75,7 @@ export function Footer() {
           </Link>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-warm-sand/70">
             Bold, nature-inspired jewelry and accessories for the confident
-            woman. Subscribe to our newsletter for exclusive offers and new
-            arrivals.
+            woman.
           </p>
         </div>
 
@@ -136,16 +133,10 @@ export function Footer() {
 
       {/* Bottom bar */}
       <div className="relative border-t border-warm-sand/10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 sm:flex-row sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-center px-4 py-6 sm:px-6 lg:px-8">
           <p className="text-xs text-warm-sand/50">
             &copy; 2024 Teressa&apos;s Treasures. All rights reserved.
           </p>
-          <div className="flex items-center gap-3 text-xs text-warm-sand/40">
-            <span>Visa</span>
-            <span>Mastercard</span>
-            <span>Amex</span>
-            <span>PayPal</span>
-          </div>
         </div>
       </div>
     </footer>

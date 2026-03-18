@@ -7,10 +7,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Package,
-  ShoppingCart,
   FolderTree,
-  Star,
-  Users,
   Menu,
   X,
 } from "lucide-react";
@@ -19,10 +16,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Products", icon: Package },
-  { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/categories", label: "Categories", icon: FolderTree },
-  { href: "/admin/reviews", label: "Reviews", icon: Star },
-  { href: "/admin/customers", label: "Customers", icon: Users },
 ];
 
 function NavLinks({ onClick }: { onClick?: () => void }) {

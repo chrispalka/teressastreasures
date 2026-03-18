@@ -9,9 +9,6 @@ async function main() {
   // ── Cleanup (order matters for FK constraints) ──────────────
   await prisma.productImage.deleteMany();
   await prisma.productVariant.deleteMany();
-  await prisma.orderItem.deleteMany();
-  await prisma.review.deleteMany();
-  await prisma.wishlistItem.deleteMany();
   await prisma.product.deleteMany();
   console.log("  Cleared existing products & related records.");
 
@@ -71,7 +68,6 @@ async function main() {
     price: number;
     compareAtPrice?: number;
     sku: string;
-    stock: number;
     material: string;
     isFeatured?: boolean;
     categorySlug: string;
@@ -87,7 +83,6 @@ async function main() {
       description: "Bold and unapologetic, the Wild Heart ring features a sculptural silhouette that catches the light from every angle. Crafted in polished sterling silver, it's the piece that starts conversations.",
       price: 36.0,
       sku: "TT-RN-001",
-      stock: 28,
       material: "Sterling Silver",
       isFeatured: true,
       categorySlug: "rings",
@@ -100,7 +95,6 @@ async function main() {
       description: "Inspired by nature's geometry, this dainty hexagonal band is designed to stack and layer. Wear one for subtlety or three for a hive of style.",
       price: 24.0,
       sku: "TT-RN-002",
-      stock: 45,
       material: "14K Gold Fill",
       categorySlug: "rings",
       tags: ["stacking", "gold", "minimalist", "dainty"],
@@ -113,7 +107,6 @@ async function main() {
       price: 58.0,
       compareAtPrice: 72.0,
       sku: "TT-RN-003",
-      stock: 12,
       material: "Sterling Silver with Moonstone",
       categorySlug: "rings",
       tags: ["gemstone", "moonstone", "boho", "sale"],
@@ -125,7 +118,6 @@ async function main() {
       description: "Organic and elegant, the Twisted Vine band wraps around the finger like a tendril in a secret garden. Perfect as a wedding band or a timeless everyday ring.",
       price: 42.0,
       sku: "TT-RN-004",
-      stock: 33,
       material: "Rose Gold Vermeil",
       categorySlug: "rings",
       tags: ["rose gold", "wedding", "organic", "everyday"],
@@ -139,7 +131,6 @@ async function main() {
       description: "These medium-sized hoops catch the warm light of late afternoon and hold it all day. Gold-plated brass with a satin finish gives them a lived-in luxury feel.",
       price: 42.0,
       sku: "TT-ER-001",
-      stock: 38,
       material: "Gold-Plated Brass",
       isFeatured: true,
       categorySlug: "earrings",
@@ -152,7 +143,6 @@ async function main() {
       description: "Delicate hammered petals dangle gracefully with every turn of your head. Lightweight enough for all-day wear, striking enough for evening plans.",
       price: 34.0,
       sku: "TT-ER-002",
-      stock: 25,
       material: "Sterling Silver",
       categorySlug: "earrings",
       tags: ["drop", "silver", "hammered", "lightweight"],
@@ -164,7 +154,6 @@ async function main() {
       description: "A trio of tiny studs — a crescent moon, a star, and a sun — so you can mix and match your cosmic mood. Sold as a set of three pairs.",
       price: 28.0,
       sku: "TT-ER-003",
-      stock: 50,
       material: "Gold Vermeil",
       categorySlug: "earrings",
       tags: ["studs", "set", "celestial", "gold", "gift"],
@@ -177,7 +166,6 @@ async function main() {
       price: 56.0,
       compareAtPrice: 68.0,
       sku: "TT-ER-004",
-      stock: 9,
       material: "Antiqued Brass",
       categorySlug: "earrings",
       tags: ["chandelier", "statement", "boho", "sale"],
@@ -191,7 +179,6 @@ async function main() {
       description: "Rich enamel in deep midnight tones wraps around a sturdy brass cuff adorned with subtle animal motifs. A wearable piece of art that pairs with everything from linen to leather.",
       price: 68.0,
       sku: "TT-BR-001",
-      stock: 15,
       material: "Enamel on Brass",
       isFeatured: true,
       categorySlug: "bracelets",
@@ -204,7 +191,6 @@ async function main() {
       description: "Hand-braided cotton threads in sun-faded pastels give this bracelet carefree beach-day energy. Adjustable sliding knot fits every wrist.",
       price: 18.0,
       sku: "TT-BR-002",
-      stock: 48,
       material: "Waxed Cotton Thread",
       categorySlug: "bracelets",
       tags: ["friendship", "cotton", "adjustable", "casual"],
@@ -216,7 +202,6 @@ async function main() {
       description: "A modern flat chain in warm gold that sits beautifully alone or stacked alongside your watch. The lobster clasp and two-inch extender make it effortlessly adjustable.",
       price: 46.0,
       sku: "TT-BR-003",
-      stock: 30,
       material: "18K Gold Plated Stainless Steel",
       categorySlug: "bracelets",
       tags: ["chain", "layering", "gold", "everyday"],
@@ -230,7 +215,6 @@ async function main() {
       description: "A versatile gold vermeil chain that can be worn as a choker, doubled up, or draped long for effortless layering. One necklace, infinite possibilities.",
       price: 54.0,
       sku: "TT-NK-001",
-      stock: 22,
       material: "Gold Vermeil",
       isFeatured: true,
       categorySlug: "necklaces",
@@ -243,7 +227,6 @@ async function main() {
       description: "A single polished teardrop pendant hangs from a fine cable chain, catching the light like a drop of morning dew. Understated elegance at its purest.",
       price: 38.0,
       sku: "TT-NK-002",
-      stock: 35,
       material: "Sterling Silver",
       categorySlug: "necklaces",
       tags: ["pendant", "silver", "minimalist", "everyday"],
@@ -256,7 +239,6 @@ async function main() {
       price: 72.0,
       compareAtPrice: 88.0,
       sku: "TT-NK-003",
-      stock: 8,
       material: "Natural Turquoise on Gold Fill",
       categorySlug: "necklaces",
       tags: ["turquoise", "gemstone", "boho", "sale", "unique"],
@@ -268,7 +250,6 @@ async function main() {
       description: "Freshwater pearls hand-knotted on silk thread bring timeless grace to any neckline. A treasure you will reach for again and again, season after season.",
       price: 96.0,
       sku: "TT-NK-004",
-      stock: 14,
       material: "Freshwater Pearl on Silk",
       categorySlug: "necklaces",
       tags: ["pearl", "classic", "bridal", "timeless"],
@@ -282,7 +263,6 @@ async function main() {
       description: "Unbelievably soft and feather-light, this pure cashmere scarf drapes like a dream. Available in a warm oatmeal hue that goes with absolutely everything in your closet.",
       price: 89.0,
       sku: "TT-SC-001",
-      stock: 18,
       material: "100% Cashmere",
       categorySlug: "scarves",
       tags: ["cashmere", "luxury", "neutral", "gift"],
@@ -294,7 +274,6 @@ async function main() {
       description: "A riot of hand-illustrated florals printed on lustrous silk twill. Wear it around your neck, tie it to your handbag, or frame it as art — it's that beautiful.",
       price: 64.0,
       sku: "TT-SC-002",
-      stock: 20,
       material: "100% Silk Twill",
       categorySlug: "scarves",
       tags: ["silk", "floral", "printed", "versatile"],
@@ -306,7 +285,6 @@ async function main() {
       description: "Wrap yourself in this generously sized blanket scarf on crisp autumn mornings. The heritage plaid in warm rusts and creams makes every coffee run feel like a countryside stroll.",
       price: 48.0,
       sku: "TT-SC-003",
-      stock: 32,
       material: "Brushed Wool Blend",
       categorySlug: "scarves",
       tags: ["blanket", "plaid", "wool", "autumn", "cozy"],
@@ -320,7 +298,6 @@ async function main() {
       description: "A classic wool felt fedora with a wide brim that shades your eyes and frames your face beautifully. The leather band and brass buckle add an adventurous finish.",
       price: 56.0,
       sku: "TT-HT-001",
-      stock: 16,
       material: "100% Wool Felt",
       categorySlug: "hats",
       tags: ["fedora", "wool", "wide brim", "classic"],
@@ -332,7 +309,6 @@ async function main() {
       description: "Chunky ribbed merino wool keeps you warm without the itch. The relaxed slouchy fit works whether you are hitting the slopes or the farmers' market.",
       price: 32.0,
       sku: "TT-HT-002",
-      stock: 40,
       material: "Merino Wool",
       categorySlug: "hats",
       tags: ["beanie", "knit", "merino", "winter", "cozy"],
@@ -344,7 +320,6 @@ async function main() {
       description: "Hand-woven natural straw with a floppy brim and grosgrain ribbon — the quintessential summer hat. UPF 50+ protection so you can soak up the sun worry-free.",
       price: 44.0,
       sku: "TT-HT-003",
-      stock: 24,
       material: "Natural Straw",
       categorySlug: "hats",
       tags: ["sun hat", "straw", "summer", "UPF"],
@@ -358,7 +333,6 @@ async function main() {
       description: "Supple lambskin leather with a cashmere lining gives these gloves an impossibly luxurious hand-feel. The open knuckle detail adds a vintage-inspired edge.",
       price: 78.0,
       sku: "TT-GL-001",
-      stock: 10,
       material: "Lambskin Leather, Cashmere Lined",
       categorySlug: "gloves",
       tags: ["leather", "cashmere", "driving", "luxury"],
@@ -370,7 +344,6 @@ async function main() {
       description: "Stay connected without freezing your fingers off. Conductive yarn fingertips let you swipe and type while a cozy fleece lining keeps the cold at bay.",
       price: 28.0,
       sku: "TT-GL-002",
-      stock: 42,
       material: "Merino Wool with Conductive Yarn",
       categorySlug: "gloves",
       tags: ["touchscreen", "knit", "tech", "practical"],
@@ -382,7 +355,6 @@ async function main() {
       description: "Full-length velvet gloves in a deep burgundy that adds instant drama to any evening look. Stretchy velvet conforms to your arm for a sleek, seamless silhouette.",
       price: 52.0,
       sku: "TT-GL-003",
-      stock: 7,
       material: "Stretch Velvet",
       categorySlug: "gloves",
       tags: ["velvet", "opera", "evening", "statement"],
@@ -401,7 +373,6 @@ async function main() {
         price: productData.price,
         compareAtPrice: productData.compareAtPrice ?? null,
         sku: productData.sku,
-        stock: productData.stock,
         material: productData.material,
         isFeatured: productData.isFeatured ?? false,
         tags: productData.tags,

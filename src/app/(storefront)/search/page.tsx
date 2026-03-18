@@ -21,7 +21,6 @@ export default async function SearchPage(props: SearchPageProps) {
         include: {
           images: { orderBy: { sortOrder: "asc" } },
           category: { select: { name: true } },
-          reviews: { where: { status: "APPROVED" }, select: { rating: true } },
         },
         orderBy: { name: "asc" },
       })
@@ -36,11 +35,6 @@ export default async function SearchPage(props: SearchPageProps) {
     images: p.images.map((img) => ({ url: img.url, alt: img.alt })),
     category: { name: p.category.name },
     material: p.material,
-    averageRating:
-      p.reviews.length > 0
-        ? p.reviews.reduce((sum, r) => sum + r.rating, 0) / p.reviews.length
-        : 0,
-    reviewCount: p.reviews.length,
   }));
 
   return (

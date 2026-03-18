@@ -10,21 +10,17 @@ datasource db {
 // ─── AUTH ────────────────────────────────────────────
 
 model User {
-  id            String         @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String         @unique
+  email         String    @unique
   emailVerified DateTime?
   image         String?
   password      String?
-  role          Role           @default(CUSTOMER)
-  addresses     Address[]
-  orders        Order[]
-  reviews       Review[]
-  wishlist      WishlistItem[]
+  role          Role      @default(CUSTOMER)
   accounts      Account[]
   sessions      Session[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model Account {
@@ -66,23 +62,6 @@ enum Role {
   ADMIN
 }
 
-model Address {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  label      String?
-  fullName   String
-  line1      String
-  line2      String?
-  city       String
-  state      String
-  postalCode String
-  country    String   @default("US")
-  isDefault  Boolean  @default(false)
-  orders     Order[]
-  createdAt  DateTime @default(now())
-}
-
 // ─── CATALOG ────────────────────────────────────────
 
 model Category {
@@ -107,7 +86,6 @@ model Product {
   price           Decimal          @db.Decimal(10, 2)
   compareAtPrice  Decimal?         @db.Decimal(10, 2)
   sku             String           @unique
-  stock           Int              @default(0)
   isActive        Boolean          @default(true)
   isFeatured      Boolean          @default(false)
   material        String?
@@ -116,9 +94,6 @@ model Product {
   category        Category         @relation(fields: [categoryId], references: [id])
   images          ProductImage[]
   variants        ProductVariant[]
-  reviews         Review[]
-  wishlistItems   WishlistItem[]
-  orderItems      OrderItem[]
   tags            String[]
   metaTitle       String?
   metaDescription String?
@@ -147,93 +122,7 @@ model ProductVariant {
   value     String
   sku       String   @unique
   price     Decimal? @db.Decimal(10, 2)
-  stock     Int      @default(0)
   sortOrder Int      @default(0)
 
   @@index([productId])
-}
-
-// ─── ORDERS ─────────────────────────────────────────
-
-model Order {
-  id                    String      @id @default(cuid())
-  orderNumber           String      @unique
-  userId                String
-  user                  User        @relation(fields: [userId], references: [id])
-  status                OrderStatus @default(PENDING)
-  items                 OrderItem[]
-  subtotal              Decimal     @db.Decimal(10, 2)
-  tax                   Decimal     @db.Decimal(10, 2)
-  shipping              Decimal     @db.Decimal(10, 2)
-  total                 Decimal     @db.Decimal(10, 2)
-  shippingAddressId     String?
-  shippingAddress       Address?    @relation(fields: [shippingAddressId], references: [id])
-  stripeSessionId       String?     @unique
-  stripePaymentIntentId String?     @unique
-  trackingNumber        String?
-  notes                 String?
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
-
-  @@index([userId])
-  @@index([status])
-}
-
-model OrderItem {
-  id          String  @id @default(cuid())
-  orderId     String
-  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId   String
-  product     Product @relation(fields: [productId], references: [id])
-  variantInfo String?
-  quantity    Int
-  unitPrice   Decimal @db.Decimal(10, 2)
-  total       Decimal @db.Decimal(10, 2)
-}
-
-enum OrderStatus {
-  PENDING
-  PAID
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-  REFUNDED
-}
-
-// ─── REVIEWS ────────────────────────────────────────
-
-model Review {
-  id        String       @id @default(cuid())
-  productId String
-  product   Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User         @relation(fields: [userId], references: [id])
-  rating    Int
-  title     String?
-  body      String
-  status    ReviewStatus @default(PENDING)
-  createdAt DateTime     @default(now())
-
-  @@unique([productId, userId])
-  @@index([productId, status])
-}
-
-enum ReviewStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-// ─── WISHLIST ───────────────────────────────────────
-
-model WishlistItem {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@unique([userId, productId])
 }

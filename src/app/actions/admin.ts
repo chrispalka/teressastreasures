@@ -98,39 +98,3 @@ export async function deleteCategory(id: string) {
     return { error: "Failed to delete category." };
   }
 }
-
-// ─── Reviews ────────────────────────────────────────
-
-export async function approveReview(id: string) {
-  await requireAdmin();
-
-  try {
-    await db.review.update({
-      where: { id },
-      data: { status: "APPROVED" },
-    });
-
-    revalidatePath("/admin/reviews");
-    return {};
-  } catch (error) {
-    console.error("Approve review error:", error);
-    return { error: "Failed to approve review." };
-  }
-}
-
-export async function rejectReview(id: string) {
-  await requireAdmin();
-
-  try {
-    await db.review.update({
-      where: { id },
-      data: { status: "REJECTED" },
-    });
-
-    revalidatePath("/admin/reviews");
-    return {};
-  } catch (error) {
-    console.error("Reject review error:", error);
-    return { error: "Failed to reject review." };
-  }
-}

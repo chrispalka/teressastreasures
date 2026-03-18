@@ -36,7 +36,6 @@ const SORT_OPTIONS = [
   { value: "newest", label: "Newest" },
   { value: "price-asc", label: "Price: Low to High" },
   { value: "price-desc", label: "Price: High to Low" },
-  { value: "top-rated", label: "Top Rated" },
 ] as const;
 
 interface Category {
@@ -52,7 +51,6 @@ interface ProductFiltersProps {
     minPrice?: string;
     maxPrice?: string;
     material?: string;
-    inStock?: string;
     sort?: string;
   };
 }
@@ -99,7 +97,6 @@ function FilterContent({ categories, searchParams }: ProductFiltersProps) {
     searchParams.minPrice ||
     searchParams.maxPrice ||
     searchParams.material ||
-    searchParams.inStock ||
     searchParams.sort;
 
   return (
@@ -198,22 +195,6 @@ function FilterContent({ categories, searchParams }: ProductFiltersProps) {
             </label>
           ))}
         </div>
-      </div>
-
-      {/* In Stock */}
-      <div>
-        <label className="flex cursor-pointer items-center gap-2.5">
-          <Checkbox
-            checked={searchParams.inStock === "true"}
-            onCheckedChange={(checked) =>
-              updateParams("inStock", checked ? "true" : null)
-            }
-            className="data-[state=checked]:border-champagne-gold data-[state=checked]:bg-champagne-gold"
-          />
-          <span className="text-sm font-medium text-espresso">
-            In Stock Only
-          </span>
-        </label>
       </div>
 
       {/* Clear All */}

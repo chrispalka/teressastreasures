@@ -1,11 +1,10 @@
 import { db } from "@/lib/db";
-import { formatCurrency } from "@/lib/utils";
 import { StatsCards } from "@/components/admin/stats-cards";
 import {
-  DollarSign,
-  ShoppingCart,
-  Clock,
-  AlertTriangle,
+  Package,
+  CheckCircle,
+  FolderTree,
+  Star,
 } from "lucide-react";
 import {
   Card,
@@ -24,67 +23,49 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-
-const statusColors: Record<string, string> = {
-  PENDING: "bg-amber/20 text-amber",
-  PAID: "bg-deep-olive/20 text-deep-olive",
-  PROCESSING: "bg-champagne-gold/20 text-espresso",
-  SHIPPED: "bg-blush text-espresso",
-  DELIVERED: "bg-success/20 text-success",
-  CANCELLED: "bg-error/20 text-error",
-  REFUNDED: "bg-charcoal/10 text-charcoal",
-};
+import { formatCurrency } from "@/lib/utils";
 
 export default async function AdminDashboardPage() {
-  const [revenueResult, totalOrders, pendingOrders, lowStockCount, recentOrders] =
+  const [totalProducts, activeProducts, totalCategories, featuredProducts, recentProducts] =
     await Promise.all([
-      db.order.aggregate({
-        _sum: { total: true },
-        where: { status: { in: ["DELIVERED", "SHIPPED", "PROCESSING", "PAID"] } },
-      }),
-      db.order.count(),
-      db.order.count({
-        where: { status: { in: ["PENDING", "PAID"] } },
-      }),
-      db.product.count({
-        where: { stock: { lt: 10 }, isActive: true },
-      }),
-      db.order.findMany({
+      db.product.count(),
+      db.product.count({ where: { isActive: true } }),
+      db.category.count(),
+      db.product.count({ where: { isFeatured: true } }),
+      db.product.findMany({
         take: 5,
         orderBy: { createdAt: "desc" },
         include: {
-          user: { select: { name: true, email: true } },
-          _count: { select: { items: true } },
+          category: { select: { name: true } },
+          images: { take: 1, orderBy: { sortOrder: "asc" } },
         },
       }),
     ]);
 
-  const totalRevenue = Number(revenueResult._sum.total ?? 0);
-
   const stats = [
     {
-      title: "Total Revenue",
-      value: formatCurrency(totalRevenue),
-      icon: DollarSign,
+      title: "Total Products",
+      value: totalProducts.toLocaleString(),
+      icon: Package,
       bgColor: "bg-deep-olive/10",
     },
     {
-      title: "Total Orders",
-      value: totalOrders.toLocaleString(),
-      icon: ShoppingCart,
+      title: "Active Products",
+      value: activeProducts.toLocaleString(),
+      icon: CheckCircle,
       bgColor: "bg-champagne-gold/10",
     },
     {
-      title: "Pending Orders",
-      value: pendingOrders.toLocaleString(),
-      icon: Clock,
+      title: "Categories",
+      value: totalCategories.toLocaleString(),
+      icon: FolderTree,
       bgColor: "bg-amber/10",
     },
     {
-      title: "Low Stock Products",
-      value: lowStockCount.toLocaleString(),
-      icon: AlertTriangle,
-      bgColor: "bg-error/10",
+      title: "Featured",
+      value: featuredProducts.toLocaleString(),
+      icon: Star,
+      bgColor: "bg-blush",
     },
   ];
 
@@ -95,7 +76,7 @@ export default async function AdminDashboardPage() {
           Dashboard
         </h1>
         <p className="mt-1 text-sm text-espresso/60">
-          Welcome back. Here&apos;s what&apos;s happening with your store.
+          Welcome back. Here&apos;s an overview of your product catalog.
         </p>
       </div>
 
@@ -104,55 +85,57 @@ export default async function AdminDashboardPage() {
       <Card className="border-blush/50">
         <CardHeader>
           <CardTitle className="font-serif text-xl text-espresso">
-            Recent Orders
+            Recently Added Products
           </CardTitle>
-          <CardDescription>Last 5 orders placed in the store.</CardDescription>
+          <CardDescription>Last 5 products added to the catalog.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Order</TableHead>
-                <TableHead>Customer</TableHead>
+                <TableHead>Product</TableHead>
+                <TableHead>Category</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Total</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead className="text-right">Price</TableHead>
+                <TableHead>Added</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recentOrders.map((order) => (
-                <TableRow key={order.id}>
+              {recentProducts.map((product) => (
+                <TableRow key={product.id}>
                   <TableCell>
                     <Link
-                      href={`/admin/orders/${order.id}`}
+                      href={`/admin/products/${product.id}/edit`}
                       className="font-medium text-champagne-gold hover:underline"
                     >
-                      {order.orderNumber}
+                      {product.name}
                     </Link>
                   </TableCell>
-                  <TableCell>
-                    {order.user.name ?? order.user.email}
-                  </TableCell>
+                  <TableCell>{product.category.name}</TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
-                      className={statusColors[order.status] ?? ""}
+                      className={
+                        product.isActive
+                          ? "bg-deep-olive/20 text-deep-olive"
+                          : "bg-charcoal/10 text-charcoal"
+                      }
                     >
-                      {order.status}
+                      {product.isActive ? "Active" : "Draft"}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    {formatCurrency(Number(order.total))}
+                    {formatCurrency(Number(product.price))}
                   </TableCell>
                   <TableCell className="text-sm text-espresso/60">
-                    {new Date(order.createdAt).toLocaleDateString()}
+                    {new Date(product.createdAt).toLocaleDateString()}
                   </TableCell>
                 </TableRow>
               ))}
-              {recentOrders.length === 0 && (
+              {recentProducts.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-espresso/50">
-                    No orders yet.
+                    No products yet.
                   </TableCell>
                 </TableRow>
               )}

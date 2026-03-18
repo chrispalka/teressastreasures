@@ -3,8 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cn, formatCurrency } from "@/lib/utils";
-import { RatingStars } from "@/components/storefront/rating-stars";
-import { WishlistButton } from "@/components/storefront/wishlist-button";
 
 interface ProductImage {
   url: string;
@@ -24,8 +22,6 @@ export interface Product {
   images: ProductImage[];
   category: ProductCategory;
   material?: string | null;
-  averageRating?: number;
-  reviewCount?: number;
 }
 
 interface ProductCardProps {
@@ -34,15 +30,12 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const {
-    id,
     name,
     slug,
     price,
     compareAtPrice,
     images,
     category,
-    averageRating,
-    reviewCount,
   } = product;
 
   const isOnSale = compareAtPrice != null && compareAtPrice > price;
@@ -86,11 +79,6 @@ export function ProductCard({ product }: ProductCardProps) {
             Sale
           </span>
         )}
-
-        {/* Wishlist button */}
-        <div className="absolute right-3 top-3">
-          <WishlistButton productId={id} />
-        </div>
       </div>
 
       {/* Details section */}
@@ -122,18 +110,6 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           )}
         </div>
-
-        {/* Rating */}
-        {averageRating != null && averageRating > 0 && (
-          <div className="flex items-center gap-1.5">
-            <RatingStars rating={averageRating} size="sm" />
-            {reviewCount != null && reviewCount > 0 && (
-              <span className="text-xs text-muted-foreground">
-                ({reviewCount})
-              </span>
-            )}
-          </div>
-        )}
       </div>
     </Link>
   );

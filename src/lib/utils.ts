@@ -19,10 +19,3 @@ export function slugify(text: string): string {
     .replace(/[\s_]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
-
-export function generateOrderNumber(): string {
-  const now = new Date();
-  const date = now.toISOString().slice(0, 10).replace(/-/g, "");
-  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-  return `TT-${date}-${random}`;
-}

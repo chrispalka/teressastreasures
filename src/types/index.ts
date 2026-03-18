@@ -1,17 +1,5 @@
 import type { Decimal } from "@prisma/client/runtime/library";
 
-export interface CartItem {
-  id: string;
-  productId: string;
-  name: string;
-  slug: string;
-  price: number;
-  image: string;
-  quantity: number;
-  variantInfo?: string;
-  maxStock: number;
-}
-
 export interface ProductWithDetails {
   id: string;
   name: string;
@@ -20,7 +8,6 @@ export interface ProductWithDetails {
   price: Decimal;
   compareAtPrice: Decimal | null;
   sku: string;
-  stock: number;
   isActive: boolean;
   isFeatured: boolean;
   material: string | null;
@@ -48,10 +35,6 @@ export interface ProductWithDetails {
     value: string;
     sku: string;
     price: Decimal | null;
-    stock: number;
-  }[];
-  reviews: {
-    rating: number;
   }[];
 }
 
@@ -60,8 +43,7 @@ export interface FilterParams {
   minPrice?: number;
   maxPrice?: number;
   material?: string;
-  inStock?: boolean;
-  sort?: "newest" | "price-asc" | "price-desc" | "top-rated";
+  sort?: "newest" | "price-asc" | "price-desc";
   page?: number;
   search?: string;
 }

@@ -1,16 +1,11 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
-import { ChevronRight, Truck } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import { db } from "@/lib/db";
 import { formatCurrency } from "@/lib/utils";
 import { ProductGallery } from "@/components/storefront/product-gallery";
-import { RatingStars } from "@/components/storefront/rating-stars";
-import { ReviewList } from "@/components/storefront/review-list";
-import { ReviewForm } from "@/components/storefront/review-form";
-import { AddToCartButton } from "@/components/storefront/add-to-cart-button";
 import { ProductCard } from "@/components/storefront/product-card";
 import {
   Tabs,
@@ -30,11 +25,6 @@ async function getProduct(slug: string) {
       category: true,
       images: { orderBy: { sortOrder: "asc" } },
       variants: { orderBy: { sortOrder: "asc" } },
-      reviews: {
-        where: { status: "APPROVED" },
-        include: { user: { select: { name: true } } },
-        orderBy: { createdAt: "desc" },
-      },
     },
   });
 
@@ -51,7 +41,6 @@ async function getRelatedProducts(categoryId: string, currentProductId: string) 
     include: {
       images: { orderBy: { sortOrder: "asc" }, take: 2 },
       category: { select: { name: true } },
-      reviews: { where: { status: "APPROVED" }, select: { rating: true } },
     },
     take: 4,
   });
@@ -93,13 +82,6 @@ export default async function ProductDetailPage(props: PageProps) {
   const isOnSale = compareAtPrice != null && compareAtPrice > price;
   const weight = product.weight ? Number(product.weight) : null;
 
-  // Calculate review stats
-  const reviewCount = product.reviews.length;
-  const averageRating =
-    reviewCount > 0
-      ? product.reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount
-      : 0;
-
   // Group variants by name
   const variantGroups: Record<string, typeof product.variants> = {};
   for (const variant of product.variants) {
@@ -129,18 +111,7 @@ export default async function ProductDetailPage(props: PageProps) {
       url: `${process.env.NEXT_PUBLIC_BASE_URL || ""}/products/${product.slug}`,
       priceCurrency: "USD",
       price: price.toFixed(2),
-      availability:
-        product.stock > 0
-          ? "https://schema.org/InStock"
-          : "https://schema.org/OutOfStock",
     },
-    ...(reviewCount > 0 && {
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: averageRating.toFixed(1),
-        reviewCount,
-      },
-    }),
   };
 
   // JSON-LD BreadcrumbList
@@ -219,19 +190,6 @@ export default async function ProductDetailPage(props: PageProps) {
               {product.name}
             </h1>
 
-            {/* Rating + review count */}
-            {reviewCount > 0 && (
-              <a
-                href="#reviews"
-                className="inline-flex items-center gap-2 w-fit transition-opacity hover:opacity-80"
-              >
-                <RatingStars rating={averageRating} />
-                <span className="text-sm text-muted-foreground underline underline-offset-2">
-                  {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
-                </span>
-              </a>
-            )}
-
             {/* Price */}
             <div className="flex items-baseline gap-3">
               {isOnSale ? (
@@ -279,26 +237,6 @@ export default async function ProductDetailPage(props: PageProps) {
                 ))}
               </div>
             )}
-
-            {/* Add to Cart */}
-            <AddToCartButton
-              product={{
-                id: product.id,
-                name: product.name,
-                slug: product.slug,
-                price,
-                image: product.images[0]?.url || "",
-                stock: product.stock,
-              }}
-            />
-
-            {/* Shipping estimate */}
-            <div className="flex items-center gap-2 rounded-lg bg-warm-sand/50 px-4 py-3">
-              <Truck className="h-4.5 w-4.5 text-deep-olive" />
-              <span className="text-sm text-espresso">
-                Free shipping on orders over $75
-              </span>
-            </div>
           </div>
         </div>
 
@@ -311,9 +249,6 @@ export default async function ProductDetailPage(props: PageProps) {
               </TabsTrigger>
               <TabsTrigger value="details" className="font-serif text-base">
                 Details &amp; Materials
-              </TabsTrigger>
-              <TabsTrigger value="reviews" className="font-serif text-base">
-                Reviews ({reviewCount})
               </TabsTrigger>
             </TabsList>
 
@@ -360,17 +295,6 @@ export default async function ProductDetailPage(props: PageProps) {
                 )}
               </dl>
             </TabsContent>
-
-            <TabsContent value="reviews" className="pt-6" id="reviews">
-              <ReviewList
-                reviews={product.reviews}
-                averageRating={averageRating}
-                reviewCount={reviewCount}
-              />
-              <div className="mt-10 border-t border-blush pt-8">
-                <ReviewForm productId={product.id} />
-              </div>
-            </TabsContent>
           </Tabs>
         </div>
 
@@ -381,37 +305,26 @@ export default async function ProductDetailPage(props: PageProps) {
               You May Also Love
             </h2>
             <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
-              {relatedProducts.map((related) => {
-                const relatedReviewCount = related.reviews.length;
-                const relatedAvgRating =
-                  relatedReviewCount > 0
-                    ? related.reviews.reduce((sum, r) => sum + r.rating, 0) /
-                      relatedReviewCount
-                    : 0;
-
-                return (
-                  <ProductCard
-                    key={related.id}
-                    product={{
-                      id: related.id,
-                      name: related.name,
-                      slug: related.slug,
-                      price: Number(related.price),
-                      compareAtPrice: related.compareAtPrice
-                        ? Number(related.compareAtPrice)
-                        : null,
-                      images: related.images.map((img) => ({
-                        url: img.url,
-                        alt: img.alt || related.name,
-                      })),
-                      category: { name: related.category.name },
-                      material: related.material || undefined,
-                      averageRating: relatedAvgRating,
-                      reviewCount: relatedReviewCount,
-                    }}
-                  />
-                );
-              })}
+              {relatedProducts.map((related) => (
+                <ProductCard
+                  key={related.id}
+                  product={{
+                    id: related.id,
+                    name: related.name,
+                    slug: related.slug,
+                    price: Number(related.price),
+                    compareAtPrice: related.compareAtPrice
+                      ? Number(related.compareAtPrice)
+                      : null,
+                    images: related.images.map((img) => ({
+                      url: img.url,
+                      alt: img.alt || related.name,
+                    })),
+                    category: { name: related.category.name },
+                    material: related.material || undefined,
+                  }}
+                />
+              ))}
             </div>
           </section>
         )}

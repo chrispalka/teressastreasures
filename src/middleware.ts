@@ -6,15 +6,6 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const role = req.auth?.user?.role;
 
-  // Protect /account/* routes - require authentication
-  if (pathname.startsWith("/account")) {
-    if (!isLoggedIn) {
-      const loginUrl = new URL("/auth/login", req.nextUrl.origin);
-      loginUrl.searchParams.set("callbackUrl", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
   // Protect /admin/* routes - require ADMIN role
   if (pathname.startsWith("/admin")) {
     if (!isLoggedIn || role !== "ADMIN") {
@@ -26,5 +17,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/account/:path*", "/admin/:path*"],
+  matcher: ["/admin/:path*"],
 };

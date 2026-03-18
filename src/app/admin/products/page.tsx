@@ -27,7 +27,7 @@ interface Props {
 export default async function AdminProductsPage({ searchParams }: Props) {
   const { sort = "name", order = "asc", search = "" } = await searchParams;
 
-  const validSortFields = ["name", "price", "stock", "createdAt"] as const;
+  const validSortFields = ["name", "price", "createdAt"] as const;
   const sortField = validSortFields.includes(sort as typeof validSortFields[number])
     ? sort
     : "name";
@@ -40,7 +40,6 @@ export default async function AdminProductsPage({ searchParams }: Props) {
     include: {
       category: { select: { name: true } },
       images: { take: 1, orderBy: { sortOrder: "asc" } },
-      _count: { select: { reviews: true } },
     },
     orderBy: { [sortField]: sortOrder },
   });
@@ -105,11 +104,6 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                     Price {sort === "price" && (order === "asc" ? "\u2191" : "\u2193")}
                   </Link>
                 </TableHead>
-                <TableHead>
-                  <Link href={sortLink("stock")} className="hover:text-champagne-gold">
-                    Stock {sort === "stock" && (order === "asc" ? "\u2191" : "\u2193")}
-                  </Link>
-                </TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Featured</TableHead>
                 <TableHead>Actions</TableHead>
@@ -138,17 +132,6 @@ export default async function AdminProductsPage({ searchParams }: Props) {
                     {product.category.name}
                   </TableCell>
                   <TableCell>{formatCurrency(Number(product.price))}</TableCell>
-                  <TableCell>
-                    <span
-                      className={
-                        product.stock < 10
-                          ? "font-semibold text-error"
-                          : "text-espresso"
-                      }
-                    >
-                      {product.stock}
-                    </span>
-                  </TableCell>
                   <TableCell>
                     <Badge
                       variant={product.isActive ? "default" : "secondary"}
@@ -181,7 +164,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
               {products.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={7}
                     className="text-center text-espresso/50"
                   >
                     No products found.

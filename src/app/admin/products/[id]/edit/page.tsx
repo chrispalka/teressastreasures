@@ -37,7 +37,6 @@ export default async function EditProductPage({ params }: Props) {
       ? Number(product.compareAtPrice)
       : null,
     sku: product.sku,
-    stock: product.stock,
     isActive: product.isActive,
     isFeatured: product.isFeatured,
     material: product.material,
@@ -52,7 +51,6 @@ export default async function EditProductPage({ params }: Props) {
       value: v.value,
       sku: v.sku,
       price: v.price ? Number(v.price) : undefined,
-      stock: v.stock,
     })),
   };
 
